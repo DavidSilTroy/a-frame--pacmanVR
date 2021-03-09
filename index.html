@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Pacman VR</title>
+    <meta name="description" content="Improving evrything I know about a-frame to create a better labyrinth where you have to find a number of balls and you can also find another things">
+    <meta name="keywords" content="HTML, JavaScript, a-frame">
+    <meta name="author" content="David Silva Troya">
+     <!--Link para libreria de a-frame-->
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+     <!--Link para -->
+    <script src="https://unpkg.com/aframe-event-set-component@4.2.1/dist/aframe-event-set-component.min.js"></script>
+     <!--Link para agregar físicas-->
+    <script src="https://cdn.rawgit.com/donmccurdy/aframe-physics-system/v4.0.1/dist/aframe-physics-system.min.js"></script>
+    <!--Link para extras de a-frame-->
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.0/dist/aframe-extras.min.js"></script>
+    <!--Link para archivo.js creado-->
+    <script src="js/stuff.js" type="text/javascript"></script>
+    <script src="js/phantoms.js" type="text/javascript"></script>
+    <script src="js/eventos.js" type="text/javascript"></script>
+  </head>
+  <body>
+    <a-scene>
+      <!--Aquí se mandan a llamar los archivos que usaremos más adelante para ubicar en 
+          nuestras escenas y les ponemos un nombre en id que haga más fácil invocarlos-->
+      <a-assets>
+          <!-- Todos los archivos en 3D en formato .glb-->
+        <a-asset-item id="ironman"      src="models/ironman.glb"        ></a-asset-item>
+        <a-asset-item id="mblinky"      src="models/blinky.glb"         ></a-asset-item>
+        <a-asset-item id="mpinky"       src="models/pinky.glb"          ></a-asset-item>
+        <a-asset-item id="minky"        src="models/inky.glb"           ></a-asset-item>
+        <a-asset-item id="mclyde"       src="models/clyde.glb"          ></a-asset-item>
+        <a-asset-item id="mblue"        src="models/blue.glb"          ></a-asset-item>
+        
+
+        <!--Todas las imagenes que se van a usar-->
+        <img id="barneyS"               src="img/barneyS.jpg">
+        <img id="ground"                src="img/bestcolorever.png">
+        <img id="pacman"                src="img/pacman.png">
+        <img id="intro"                 src="img/intro.png">
+        <img id="play"                  src="img/play.jpg">
+        <img id="github"                src="img/github.png">
+        <img id="twitter"               src="img/twitter.jpg">
+        <img id="instagram"             src="img/instagram.jpg">
+
+        
+
+        <!--Todos los audios que se van a usar-->
+        
+        <audio id="wakawaka"             src="audio/wakawaka.mp3"              ></audio>
+        <audio id="dead"                src="audio/deadsound.mp3"             ></audio>
+        <audio id="music_intro"         src="audio/intro.mp3"                 ></audio>
+        <audio id="blinky"              src="audio/Blinky.mp3"                ></audio>
+        <audio id="pinky"               src="audio/Pinky.mp3"                 ></audio>
+        <audio id="inky"                src="audio/Inky.mp3"                   ></audio>
+        <audio id="clyde"               src="audio/Clyde.mp3"                 ></audio>
+        
+      </a-assets>
+    <!--EL VISOR-->
+      <a-entity id="player"  
+                movement-controls kinematic-body>
+          <a-entity id="view" 
+                    camera
+                    position="0 1.7 0"
+                    look-controls="pointerLockEnabled: true">
+                    <a-text id="mensaje" 
+                                value="bienvenido a mi juego de PACMAN! :D" 
+                                position="-2 1.5 -2" 
+                                color="white" 
+                                >
+                    </a-text> 
+                    <a-entity id='pointer' 
+                        cursor="fuse: true; fuseTimeout: 500"
+                        position="0 0 -1"
+                        rotation="0 0 0"
+                        geometry="primitive: ring; radiusInner: 0.01; radiusOuter: 0.02"
+                        material="color: white; shader: flat">  
+                    </a-entity>
+          </a-entity>
+      </a-entity>
+      <!--AQUI EMPIEZA LO GENIAL-->
+      <!--Para poner las paredes del laberinto-->
+      <a-entity id="wall_entity"></a-entity>
+      <!--Para poner las esferas a encontrar del laberinto-->
+      <a-entity id="point_entity" ></a-entity>
+      <!--Para poner obejtos 3d en el laberinto-->
+      <a-entity id="phantom_entity"></a-entity>
+      <!--Para crear cualquier otra entidad-->
+      <a-entity position="0 0 0" id="others_entity">
+        <a-plane  src= "#intro" 
+                  height="4" 
+                  width="8" 
+                  rotation="0 0 0" 
+                  position="0 2.5 -3"
+                  ></a-plane>
+        <a-image  src="#pacman" 
+                  onclick="gameSetUp.start=1" 
+                  scale="2.5 1.5 1" 
+                  position="1.7 3.3 -2" 
+                  animation="property: rotation; to: 0 -10 0; easing: linear; dur: 7000"
+                  ></a-image>
+        <a-image  src="#barneyS" 
+                  onclick="gameSetUp.start=1" 
+                  rotation="0 180 0" 
+                  scale="2 4 1" 
+                  position="0 2 4" 
+                  animation="property: rotation; to: 0 -180 0; easing: linear; dur: 7000"
+                  ></a-image>
+        <a-box    src="#play" 
+                  onclick="gameSetUp.start=1" 
+                  position="-3 0.6 -2.5" 
+                  rotation="0 0 0" 
+                  animation="property: rotation; to: 0 360 0; loop: true; dur: 4000"
+                  ></a-box>
+        <a-box    src="#github" 
+                  position="4.5 3 -1.5" 
+                  rotation="0 0 0" 
+                  animation="property: rotation; to: 0 360 0; loop: true; dur: 5000"
+                  ><!--a-link  scale="0.5 0.5 0.1"  
+                            href="https://github.com/DavidSilTroy"
+                            ></a-link--></a-box>
+        <a-box    src="#twitter" 
+                  position="5 1.5 -2" 
+                  rotation="0 0 0" 
+                  animation="property: rotation; to: 0 360 0; loop: true; dur: 8000" 
+                  ><!--a-link  scale="0.5 0.5 0.1"  
+                            href="https://twitter.com/davidsiltroy"
+                            ></a-link--></a-box>
+        <a-box    src="#instagram" 
+                  position="6 0.5 -0.5" 
+                  rotation="0 0 0" 
+                  animation="property: rotation; to: 0 360 0; loop: true; dur: 3000" 
+                  ><!--a-link  scale="0.5 0.5 0.1"  
+                            href="https://www.instagram.com/davidsiltroy/?hl=es-la"
+                            ></a-link--></a-box>
+        
+      </a-entity> 
+      <a-grid src="#ground" static-body width='250' depth='250' height='150'></a-grid>
+      <a-sky color="black"></a-sky>
+    </a-scene>
+  </body>
+</html>
